@@ -1,0 +1,64 @@
+general:
+  exp_name: "CIFAR10_sam_resnet50"
+  train_batch_size: 512
+  test_batch_size: 128
+  n_epochs: 120
+  trainer: SAMTrainer
+  device: cpu
+
+
+logging:
+  save_ckpt_every: 10
+  log_full_every: 10
+  log_dir: runs/${general.exp_name}
+
+
+data:
+  dataset: CIFAR10
+  root: ./data
+  download: False
+  train:
+    train: True
+    root: ${data.root}
+    download: ${data.download}
+  test:
+    train: False
+    root: ${data.root}
+    download: ${data.download}
+
+dataloader:
+  train:
+    batch_size: ${general.train_batch_size}
+    shuffle: True
+    num_workers: 8
+    pin_memory: False
+    persistent_workers: False
+  test:
+    batch_size: ${general.test_batch_size}
+    shuffle: False
+    num_workers: 1
+    pin_memory: False
+    persistent_workers: False
+
+
+training:
+  model: ResNet
+  model_params:
+    ch: 16
+    n_blocks: [9,9,9]
+    strides: [1,2,2]
+    n_classes: 10
+    bias: False
+  optimizer: SGD
+  optim_params:
+    lr: 1e-1
+    momentum: 0.9
+    weight_decay: 1e-4
+  loss_criterion: CrossEntropyLoss
+  loss_params:
+    reduction: mean
+  scheduler: StepLR
+  scheduler_params:
+    step_size: 30
+    gamma: 0.1
+
