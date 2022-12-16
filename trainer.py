@@ -1,4 +1,4 @@
-__all__ = ["CIFARTrainer", "SAMTrainer"]
+__all__ = ["CIFARTrainer", "SAMTrainer", "FGSMTrainer", "Inferencer"]
 
 
 import collections
@@ -295,3 +295,25 @@ class FGSMTrainer(CIFARTrainer):
         self.optim.second_step(zero_grad=True)
 
         return return_loss, return_logits, grad_norm
+
+
+class Inferencer(CIFARTrainer):
+    def setup_model(self):
+        assert hasattr(self.config, "inference") and hasattr(self.config.inference, "ckpt")
+        if not os.path.exists(self.config.inference.ckpt):
+            raise FileNotFoundError(f"No checkpoint named {self.config.inference.ckpt}")
+        model_state_dict = torch.load(self.config.inference.ckpt, map_location=self.device)
+        self.model = getattr(models, self.config.training.model)(
+            **self.config.training.model_params
+        )
+        self.model.load_state_dict(model_state_dict)
+        self.model.to(self.device)
+
+    def setup_optim(self):
+        pass
+
+    def train_loop(self):
+        test_epoch_info = super().test_epoch()
+        print("Inference results:")
+        for k, v in test_epoch_info.items():
+            print(f"{k} -- {v:.4f}")
