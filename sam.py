@@ -94,15 +94,11 @@ class FGSM(torch.optim.Optimizer):
         self,
         params,
         base_optimizer,
-        rho: float = 0.0025,
-        clip_value: float = 0.01,
+        rho: float = 0.00025,
         **kwargs,
     ):
         assert rho >= 0.0, f"Invalid rho, should be non-negative: {rho}"
-        assert (
-            clip_value >= 0.0
-        ), f"Invalid clip_value, should be non-negative: {clip_value}"
-        defaults = dict(rho=rho, clip_value=clip_value, **kwargs)
+        defaults = dict(rho=rho, **kwargs)
 
         super().__init__(params, defaults)
 
@@ -114,7 +110,6 @@ class FGSM(torch.optim.Optimizer):
     def fgsm_step(self, zero_grad: bool = False, save_state: bool = False):
         for group in self.param_groups:
             scale = group["rho"]
-            clip_val = group["clip_value"]
 
             for p in group["params"]:
                 if p.grad is None:
@@ -123,7 +118,6 @@ class FGSM(torch.optim.Optimizer):
                     self.state[p]["old_p"] = p.data.clone()
                 e_w = scale * torch.sign(p.grad)
                 p.add_(e_w)
-                p.clamp_(min=-clip_val, max=clip_val)
 
         if zero_grad:
             self.zero_grad()

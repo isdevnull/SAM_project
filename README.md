@@ -1,7 +1,8 @@
 # SAM Project
 
-This project explores Sharpness-Aware Minimization (SAM) method.
-
+This project attempts to explore and compare Sharpness Aware Minimization (SAM) methods.
+Our main goal is to compare generalization ability of SAM and Fast Gradient Sign Method (FGSM) on CIFAR10
+and CIFAR100 datasets.
 ## Quick Start
 ### Install
 ```angular2html
@@ -44,11 +45,25 @@ python main.py config=configs/inference_config.yaml inference.ckpt="path_to_ckpt
 - `$DATASET` is either "CIFAR10" or "CIFAR100"
 - `inference.ckpt` is mandatory cli argument
 
-### Reference
+### Checkpoints and training data
+Checkpoints and training data are provided via Google Drive link: https://drive.google.com/drive/folders/1l5ipbxxJvmgadcfHDQ9oAeCXw1VE5sLt
+You can download all data (careful, large size) via:
+```angular2html
+pip install gdown 
+gdown --folder https://drive.google.com/drive/folders/1l5ipbxxJvmgadcfHDQ9oAeCXw1VE5sLt
+```
+Each folder contains run with corresponding tensorboard log data.
+You can visualize results via:
+```angular2html
+tensorboard --logdir sam_project_data
+```
+Every run folder contains `checkpoints` folder containing model checkpoints that can be used for inference and verifying results.
+
+## Reference
 SAM method is taken from the following repository:
 https://github.com/davda54/sam
 
-### Authors
+## Authors
 - Ivan Shchekotov
 - Kirill Tamogashev
 - Emil Alkin
